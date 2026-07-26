@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const CoinFlipGame: React.FC<Props> = ({ onClose }) => {
-  const { deductBet, addWin, triggerConfetti } = useAuth();
+  const { deductBet, addWin, triggerConfetti, placeLiveBet, updateLiveBetStatus } = useAuth();
   const [betAmount, setBetAmount] = useState<number>(5);
   const [chosenSide, setChosenSide] = useState<'heads' | 'tails'>('heads');
   const [isFlipping, setIsFlipping] = useState(false);
@@ -22,6 +22,9 @@ export const CoinFlipGame: React.FC<Props> = ({ onClose }) => {
       alert('Insufficient wallet balance to flip coin!');
       return;
     }
+
+    const potentialPayout = parseFloat((betAmount * 1.96).toFixed(2));
+    const liveBet = placeLiveBet('coin-flip', 'Emerald Coin Flip', betAmount, `Chose ${chosenSide.toUpperCase()}`, potentialPayout);
 
     setIsFlipping(true);
     setFlipResult(null);
@@ -42,12 +45,14 @@ export const CoinFlipGame: React.FC<Props> = ({ onClose }) => {
       setIsFlipping(false);
 
       if (outcome === chosenSide) {
-        const payout = betAmount * 1.96;
+        const payout = potentialPayout;
         setWinMessage(`🎉 WINNER! Coin landed on ${outcome.toUpperCase()}. Won $${payout.toFixed(2)}`);
         addWin(payout, 'Emerald Coin Flip');
+        updateLiveBetStatus(liveBet.id, 'won', payout);
         triggerConfetti();
       } else {
         setWinMessage(`Landed on ${outcome.toUpperCase()}. Better luck next flip!`);
+        updateLiveBetStatus(liveBet.id, 'lost', 0);
       }
     }, 2000);
   };

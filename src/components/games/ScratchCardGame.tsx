@@ -18,18 +18,22 @@ const SYMBOLS = [
 ];
 
 export const ScratchCardGame: React.FC<Props> = ({ onClose }) => {
-  const { deductBet, addWin, triggerConfetti } = useAuth();
+  const { deductBet, addWin, triggerConfetti, placeLiveBet, updateLiveBetStatus } = useAuth();
   const [ticketPrice] = useState(2);
   const [isPurchased, setIsPurchased] = useState(false);
   const [panels, setPanels] = useState<{ symbol: typeof SYMBOLS[0]; revealed: boolean }[]>([]);
   const [revealedCount, setRevealedCount] = useState(0);
   const [winMessage, setWinMessage] = useState<string | null>(null);
+  const [currentBetId, setCurrentBetId] = useState<string | null>(null);
 
   const buyNewCard = () => {
     if (!deductBet(ticketPrice)) {
       alert('Insufficient wallet balance to buy Scratch Ticket ($2)');
       return;
     }
+
+    const liveBet = placeLiveBet('speed-scratch', 'Speed Scratch Gold', ticketPrice, '6-Panel Gold Scratch', 100);
+    setCurrentBetId(liveBet.id);
 
     sound.playCoin();
 
@@ -83,9 +87,15 @@ export const ScratchCardGame: React.FC<Props> = ({ onClose }) => {
         const matchingSymbol = SYMBOLS.find(s => s.id === matchedSymbolId)!;
         setWinMessage(`🎉 MATCHED 3 ${matchingSymbol.label.toUpperCase()}! WON $${matchingSymbol.prize}`);
         addWin(matchingSymbol.prize, 'Speed Scratch Gold');
+        if (currentBetId) {
+          updateLiveBetStatus(currentBetId, 'won', matchingSymbol.prize);
+        }
         triggerConfetti();
       } else {
         setWinMessage('No match. Try another card!');
+        if (currentBetId) {
+          updateLiveBetStatus(currentBetId, 'lost', 0);
+        }
       }
     }
   };

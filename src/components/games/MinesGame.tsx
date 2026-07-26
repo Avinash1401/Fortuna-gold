@@ -9,19 +9,23 @@ interface Props {
 }
 
 export const MinesGame: React.FC<Props> = ({ onClose }) => {
-  const { deductBet, addWin, triggerConfetti } = useAuth();
+  const { deductBet, addWin, triggerConfetti, placeLiveBet, updateLiveBetStatus } = useAuth();
   const [betAmount, setBetAmount] = useState<number>(2);
   const [mineCount, setMineCount] = useState<number>(3);
   const [gameState, setGameState] = useState<'idle' | 'playing' | 'cashout' | 'busted'>('idle');
   const [tiles, setTiles] = useState<{ isMine: boolean; revealed: boolean }[]>([]);
   const [safeRevealed, setSafeRevealed] = useState<number>(0);
   const [multiplier, setMultiplier] = useState<number>(1.0);
+  const [currentBetId, setCurrentBetId] = useState<string | null>(null);
 
   const startNewGame = () => {
     if (!deductBet(betAmount)) {
       alert('Insufficient wallet balance to start Mines!');
       return;
     }
+
+    const liveBet = placeLiveBet('mines-gold', 'Mines Gold Rush', betAmount, `${mineCount} Mines Field`, betAmount * 5);
+    setCurrentBetId(liveBet.id);
 
     // Generate 25 tiles with mineCount mines
     const grid = Array(25).fill(null).map(() => ({ isMine: false, revealed: false }));
@@ -53,6 +57,9 @@ export const MinesGame: React.FC<Props> = ({ onClose }) => {
       // BOOM
       sound.playClick();
       setGameState('busted');
+      if (currentBetId) {
+        updateLiveBetStatus(currentBetId, 'lost', 0);
+      }
       // Reveal all mines
       setTiles(tiles.map(t => ({ ...t, revealed: true })));
     } else {
@@ -71,6 +78,9 @@ export const MinesGame: React.FC<Props> = ({ onClose }) => {
     const winAmount = parseFloat((betAmount * multiplier).toFixed(2));
     setGameState('cashout');
     addWin(winAmount, 'Mines Gold Rush');
+    if (currentBetId) {
+      updateLiveBetStatus(currentBetId, 'won', winAmount);
+    }
     triggerConfetti();
     // Reveal all remaining
     setTiles(tiles.map(t => ({ ...t, revealed: true })));

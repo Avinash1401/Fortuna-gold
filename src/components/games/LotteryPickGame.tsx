@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const LotteryPickGame: React.FC<Props> = ({ onClose }) => {
-  const { user, buyTicket, addWin, triggerConfetti } = useAuth();
+  const { user, buyTicket, addWin, triggerConfetti, placeLiveBet, updateLiveBetStatus } = useAuth();
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [ticketPrice] = useState<number>(2);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -53,6 +53,8 @@ export const LotteryPickGame: React.FC<Props> = ({ onClose }) => {
       return;
     }
 
+    const liveBet = placeLiveBet('powerball-649', 'Fortuna Powerball 6/49', ticketPrice, `Picked [${selectedNumbers.join(', ')}]`, 250000);
+
     setIsDrawing(true);
     setDrawnNumbers([]);
     setWinMessage(null);
@@ -93,9 +95,11 @@ export const LotteryPickGame: React.FC<Props> = ({ onClose }) => {
         if (payout > 0) {
           setWinMessage(`🎉 CONGRATULATIONS! Matched ${matches} Numbers! Won $${payout.toLocaleString()}`);
           addWin(payout, 'Powerball 6/49');
+          updateLiveBetStatus(liveBet.id, 'won', payout);
           triggerConfetti();
         } else {
           setWinMessage(`Matched ${matches} numbers. Better luck on the next draw!`);
+          updateLiveBetStatus(liveBet.id, 'lost', 0);
         }
       }
     }, 600);

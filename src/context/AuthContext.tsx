@@ -52,6 +52,7 @@ interface AuthContextType {
   liveBets: LiveBet[];
   resolveLiveBet: (betId: string, resolution: 'won' | 'lost' | 'refunded', customPayout?: number) => void;
   placeLiveBet: (gameId: string, gameTitle: string, wagerAmount: number, betDetails: string, potentialPayout: number) => LiveBet;
+  updateLiveBetStatus: (betId: string, status: 'won' | 'lost' | 'refunded', payoutAmount: number) => void;
   toggleTwoFactor: () => void;
 }
 
@@ -326,35 +327,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resolveLiveBet = (betId: string, resolution: 'won' | 'lost' | 'refunded', customPayout?: number) => {
-    setLiveBets(prev => prev.map(bet => {
-      if (bet.id !== betId) return bet;
+    setLiveBets(prev => {
+      const updated = prev.map(bet => {
+        if (bet.id !== betId) return bet;
 
-      const payout = resolution === 'won' ? (customPayout ?? bet.potentialPayout) : (resolution === 'refunded' ? bet.wagerAmount : 0);
+        const payout = resolution === 'won' ? (customPayout ?? bet.potentialPayout) : (resolution === 'refunded' ? bet.wagerAmount : 0);
 
-      // If won or refunded, credit the user's balance
-      if (resolution === 'won' || resolution === 'refunded') {
-        creditUserBalance(bet.userId, payout);
+        // If won or refunded, credit the user's balance
+        if (resolution === 'won' || resolution === 'refunded') {
+          creditUserBalance(bet.userId, payout);
 
-        if (resolution === 'won') {
-          const newWinner: RecentWinner = {
-            id: 'win_resolved_' + Date.now(),
-            username: bet.username,
-            avatar: bet.avatar,
-            gameTitle: `${bet.gameTitle} (RESOLVED)`,
-            amountWon: payout,
-            timestamp: 'Just now'
-          };
-          setRecentWinners(winPrev => [newWinner, ...winPrev.slice(0, 9)]);
+          if (resolution === 'won') {
+            const newWinner: RecentWinner = {
+              id: 'win_resolved_' + Date.now(),
+              username: bet.username,
+              avatar: bet.avatar,
+              gameTitle: `${bet.gameTitle} (RESOLVED)`,
+              amountWon: payout,
+              timestamp: 'Just now'
+            };
+            setRecentWinners(winPrev => [newWinner, ...winPrev.slice(0, 9)]);
+          }
         }
-      }
 
-      return {
-        ...bet,
-        status: resolution,
-        payoutAmount: payout
-      };
-    }));
+        return {
+          ...bet,
+          status: resolution,
+          payoutAmount: payout
+        };
+      });
+      localStorage.setItem('fortuna_live_bets', JSON.stringify(updated));
+      return updated;
+    });
 
+    window.dispatchEvent(new CustomEvent('fortuna_sync'));
     sound.playCoin();
     triggerConfetti();
   };
@@ -362,7 +368,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const placeLiveBet = (gameId: string, gameTitle: string, wagerAmount: number, betDetails: string, potentialPayout: number): LiveBet => {
     const currentU = user || DEFAULT_USER;
     const newBet: LiveBet = {
-      id: 'bet_' + Date.now(),
+      id: 'bet_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
       userId: currentU.id,
       username: currentU.username,
       avatar: currentU.avatar,
@@ -374,8 +380,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       status: 'pending',
       timestamp: 'Just now'
     };
-    setLiveBets(prev => [newBet, ...prev]);
+    setLiveBets(prev => {
+      const updated = [newBet, ...prev];
+      localStorage.setItem('fortuna_live_bets', JSON.stringify(updated));
+      return updated;
+    });
+    window.dispatchEvent(new CustomEvent('fortuna_sync'));
     return newBet;
+  };
+
+  const updateLiveBetStatus = (betId: string, status: 'won' | 'lost' | 'refunded', payoutAmount: number) => {
+    setLiveBets(prev => {
+      const updated = prev.map(b => b.id === betId ? { ...b, status, payoutAmount } : b);
+      localStorage.setItem('fortuna_live_bets', JSON.stringify(updated));
+      return updated;
+    });
+    window.dispatchEvent(new CustomEvent('fortuna_sync'));
   };
 
   const triggerDrawForGame = (gameId: string): number[] => {
@@ -489,6 +509,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('fortuna_tickets', JSON.stringify(userTickets));
   }, [userTickets]);
+
+  // Real-time synchronization for Admin & Player Panels
+  useEffect(() => {
+    const handleRealtimeSync = () => {
+      try {
+        const savedBets = localStorage.getItem('fortuna_live_bets');
+        if (savedBets) setLiveBets(JSON.parse(savedBets));
+
+        const savedUser = localStorage.getItem('fortuna_user');
+        if (savedUser) setUser(JSON.parse(savedUser));
+
+        const savedAllUsers = localStorage.getItem('fortuna_all_users');
+        if (savedAllUsers) setAllUsers(JSON.parse(savedAllUsers));
+
+        const savedTxs = localStorage.getItem('fortuna_txs');
+        if (savedTxs) setTransactions(JSON.parse(savedTxs));
+
+        const savedGames = localStorage.getItem('fortuna_games');
+        if (savedGames) setGames(JSON.parse(savedGames));
+      } catch (err) {
+        console.error("Realtime sync error:", err);
+      }
+    };
+
+    window.addEventListener('storage', handleRealtimeSync);
+    window.addEventListener('fortuna_sync', handleRealtimeSync);
+    return () => {
+      window.removeEventListener('storage', handleRealtimeSync);
+      window.removeEventListener('fortuna_sync', handleRealtimeSync);
+    };
+  }, []);
 
   const triggerConfetti = () => {
     try {
@@ -855,6 +906,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         liveBets,
         resolveLiveBet,
         placeLiveBet,
+        updateLiveBetStatus,
         toggleTwoFactor
       }}
     >

@@ -20,7 +20,7 @@ const WHEEL_SEGMENTS = [
 ];
 
 export const FortuneWheelGame: React.FC<Props> = ({ onClose }) => {
-  const { deductBet, addWin, triggerConfetti } = useAuth();
+  const { deductBet, addWin, triggerConfetti, placeLiveBet, updateLiveBetStatus } = useAuth();
   const [spinCost] = useState(5);
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationDegree, setRotationDegree] = useState(0);
@@ -32,6 +32,8 @@ export const FortuneWheelGame: React.FC<Props> = ({ onClose }) => {
       alert('Insufficient wallet balance to spin ($5 required)');
       return;
     }
+
+    const liveBet = placeLiveBet('lucky-wheel', 'Lucky Gold Wheel', spinCost, 'Gold Wheel Spin Wager', 500);
 
     setIsSpinning(true);
     setWonPrize(null);
@@ -58,8 +60,13 @@ export const FortuneWheelGame: React.FC<Props> = ({ onClose }) => {
       setIsSpinning(false);
       const winner = WHEEL_SEGMENTS[randomIndex];
       setWonPrize(`Won ${winner.label}!`);
-      addWin(winner.prize, 'Lucky Gold Wheel');
-      triggerConfetti();
+      if (winner.prize > 0) {
+        addWin(winner.prize, 'Lucky Gold Wheel');
+        updateLiveBetStatus(liveBet.id, 'won', winner.prize);
+        triggerConfetti();
+      } else {
+        updateLiveBetStatus(liveBet.id, 'lost', 0);
+      }
     }, 4000);
   };
 
