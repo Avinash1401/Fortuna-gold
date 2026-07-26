@@ -1,0 +1,6 @@
+{
+  "name": "Fortuna Gold - Lottery & Gaming Platform",
+  "description": "Premium dark-themed lottery, casino games, VIP rewards, daily bonuses, and instant jackpot gaming platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
