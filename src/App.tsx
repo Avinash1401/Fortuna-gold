@@ -24,6 +24,8 @@ import { MinesGame } from './components/games/MinesGame';
 import { CoinFlipGame } from './components/games/CoinFlipGame';
 import { ColourPredictionGame } from './components/games/ColourPredictionGame';
 
+import { ToastProvider } from './context/ToastContext';
+
 const MainAppContent: React.FC = () => {
   const { activeTab, activeGameModal, closeGameModal } = useAuth();
 
@@ -85,8 +87,10 @@ const MainAppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <MainAppContent />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <MainAppContent />
+      </AuthProvider>
+    </ToastProvider>
   );
 }

@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { PlusCircle, Wallet, CreditCard, Sparkles, X, Check, ShieldCheck } from 'lucide-react';
+import { PlusCircle, Wallet, CreditCard, Sparkles, X, Check, ShieldCheck, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { sound } from '../../utils/audio';
 
 export const DepositModal: React.FC = () => {
   const { isDepositModalOpen, setIsDepositModalOpen, depositFunds } = useAuth();
+  const { showToast } = useToast();
   const [selectedMethod, setSelectedMethod] = useState<string>('UPI / QR');
   const [amount, setAmount] = useState<number>(1000);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processStep, setProcessStep] = useState<string>('');
+  const [progress, setProgress] = useState<number>(0);
 
   if (!isDepositModalOpen) return null;
 
@@ -21,11 +25,40 @@ export const DepositModal: React.FC = () => {
 
   const handleDeposit = () => {
     sound.playClick();
+
+    if (!amount || amount < 100) {
+      showToast('Deposit Error', 'Minimum deposit amount is ₹100', 'error');
+      return;
+    }
+    if (amount > 500000) {
+      showToast('Deposit Limit Reached', 'Maximum single deposit is ₹5,00,000', 'error');
+      return;
+    }
+
     setIsProcessing(true);
+    setProgress(15);
+    setProcessStep('Initiating secure payment gateway...');
+
     setTimeout(() => {
+      setProgress(55);
+      setProcessStep(`Confirming ₹${amount.toLocaleString()} top-up via ${selectedMethod}...`);
+    }, 600);
+
+    setTimeout(() => {
+      setProgress(90);
+      setProcessStep('Crediting wallet balance & calculating bonus...');
+    }, 1100);
+
+    setTimeout(() => {
+      setProgress(100);
       setIsProcessing(false);
       depositFunds(amount, selectedMethod);
-    }, 1200);
+      showToast(
+        'Deposit Successful!',
+        `₹${amount.toLocaleString('en-IN')} credited to your wallet via ${selectedMethod} (+₹${(amount * 0.1).toFixed(0)} Bonus Cash).`,
+        'success'
+      );
+    }, 1600);
   };
 
   return (
@@ -129,14 +162,41 @@ export const DepositModal: React.FC = () => {
             <span className="font-bold text-amber-400">+₹{(amount * 0.1).toFixed(2)} Bonus Cash</span>
           </div>
 
+          {/* Loading status & progress indicator */}
+          {isProcessing && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-zinc-900 border border-amber-500/30 rounded-xl space-y-2"
+            >
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-amber-400 font-bold flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {processStep}
+                </span>
+                <span className="text-zinc-400 font-mono font-bold">{progress}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-amber-400 to-emerald-400 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            </motion.div>
+          )}
+
           {/* Action Button */}
           <button
             onClick={handleDeposit}
             disabled={isProcessing || amount < 100}
-            className="w-full py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 text-zinc-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 text-zinc-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2 relative overflow-hidden"
           >
             {isProcessing ? (
-              <>Processing Top-Up...</>
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-zinc-950" /> Processing Top-Up...
+              </span>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" /> Deposit ₹{amount.toLocaleString()}.00 Now

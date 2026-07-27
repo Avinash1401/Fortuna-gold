@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wallet, ArrowDownRight, Sparkles, X, ShieldCheck } from 'lucide-react';
+import { Wallet, ArrowDownRight, Sparkles, X, ShieldCheck, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { sound } from '../../utils/audio';
 
 export const WithdrawModal: React.FC = () => {
   const { isWithdrawModalOpen, setIsWithdrawModalOpen, withdrawFunds, user } = useAuth();
+  const { showToast } = useToast();
   const [destination, setDestination] = useState<string>('');
   const [amount, setAmount] = useState<number>(100);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processStep, setProcessStep] = useState<string>('');
+  const [progress, setProgress] = useState<number>(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isWithdrawModalOpen || !user) return null;
@@ -17,25 +21,59 @@ export const WithdrawModal: React.FC = () => {
 
   const handleWithdraw = () => {
     sound.playClick();
-    if (amount > totalAvailable) {
-      setErrorMsg(`Amount exceeds total withdrawable balance (₹${totalAvailable.toLocaleString('en-IN', { minimumFractionDigits: 2 })})`);
+
+    if (!destination.trim()) {
+      const err = 'Please enter a valid payout UPI ID, PhonePe or Bank Account.';
+      setErrorMsg(err);
+      showToast('Withdrawal Failed', err, 'error');
       return;
     }
-    if (!destination.trim()) {
-      setErrorMsg('Please enter a valid wallet address or bank account');
+
+    if (amount <= 0) {
+      const err = 'Please enter a valid withdrawal amount.';
+      setErrorMsg(err);
+      showToast('Withdrawal Failed', err, 'error');
+      return;
+    }
+
+    if (amount > totalAvailable) {
+      const err = `Amount exceeds total withdrawable balance (₹${totalAvailable.toLocaleString('en-IN', { minimumFractionDigits: 2 })})`;
+      setErrorMsg(err);
+      showToast('Withdrawal Failed', err, 'error');
       return;
     }
 
     setErrorMsg(null);
     setIsProcessing(true);
+    setProgress(20);
+    setProcessStep('Verifying account KYC & balance eligibility...');
 
     setTimeout(() => {
+      setProgress(60);
+      setProcessStep(`Dispatching ₹${amount.toLocaleString()} cashout request to gateway...`);
+    }, 600);
+
+    setTimeout(() => {
+      setProgress(90);
+      setProcessStep('Finalizing instant payout transaction...');
+    }, 1100);
+
+    setTimeout(() => {
+      setProgress(100);
       setIsProcessing(false);
       const ok = withdrawFunds(amount, destination);
-      if (!ok) {
-        setErrorMsg('Withdrawal failed. Please check your available balance.');
+      if (ok) {
+        showToast(
+          'Withdrawal Requested!',
+          `₹${amount.toLocaleString('en-IN')} cashout initiated to ${destination}. Estimated payout: 15 mins.`,
+          'success'
+        );
+      } else {
+        const failMsg = 'Withdrawal failed. Please check your available balance.';
+        setErrorMsg(failMsg);
+        showToast('Withdrawal Failed', failMsg, 'error');
       }
-    }, 1200);
+    }, 1600);
   };
 
   return (
@@ -124,14 +162,41 @@ export const WithdrawModal: React.FC = () => {
             </div>
           )}
 
+          {/* Loading status & progress indicator */}
+          {isProcessing && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-zinc-900 border border-emerald-500/30 rounded-xl space-y-2"
+            >
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {processStep}
+                </span>
+                <span className="text-zinc-400 font-mono font-bold">{progress}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-400 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            </motion.div>
+          )}
+
           {/* Action Button */}
           <button
             onClick={handleWithdraw}
-            disabled={isProcessing || amount < 10 || amount > totalAvailable}
-            className="w-full py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 text-zinc-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            disabled={isProcessing || amount < 100 || amount > totalAvailable}
+            className="w-full py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 text-zinc-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2 relative overflow-hidden"
           >
             {isProcessing ? (
-              <>Processing Cashout...</>
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-zinc-950" /> Processing Cashout...
+              </span>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" /> Request Cashout (₹{amount.toLocaleString()})
