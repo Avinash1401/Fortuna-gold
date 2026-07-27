@@ -6,17 +6,17 @@ import { sound } from '../../utils/audio';
 
 export const DepositModal: React.FC = () => {
   const { isDepositModalOpen, setIsDepositModalOpen, depositFunds } = useAuth();
-  const [selectedMethod, setSelectedMethod] = useState<string>('USDT (TRC20)');
-  const [amount, setAmount] = useState<number>(100);
+  const [selectedMethod, setSelectedMethod] = useState<string>('UPI / QR');
+  const [amount, setAmount] = useState<number>(1000);
   const [isProcessing, setIsProcessing] = useState(false);
 
   if (!isDepositModalOpen) return null;
 
   const methods = [
-    { id: 'USDT (TRC20)', name: 'USDT (TRC20)', type: 'Crypto', bonus: '+10% Bonus' },
-    { id: 'Bitcoin (BTC)', name: 'Bitcoin (BTC)', type: 'Crypto', bonus: '+10% Bonus' },
-    { id: 'Ethereum (ETH)', name: 'Ethereum (ETH)', type: 'Crypto', bonus: '+10% Bonus' },
-    { id: 'Visa / Mastercard', name: 'Credit Card', type: 'Card', bonus: 'Instant' }
+    { id: 'UPI / QR', name: 'UPI / PhonePe / Paytm / GPay', type: 'UPI', bonus: 'Instant 0% Fee' },
+    { id: 'IMPS Bank Transfer', name: 'IMPS / Net Banking', type: 'Bank', bonus: 'Instant Transfer' },
+    { id: 'USDT (TRC20)', name: 'USDT Crypto', type: 'Crypto', bonus: '+10% Bonus' },
+    { id: 'Debit / Credit Card', name: 'Debit / Credit Card', type: 'Card', bonus: 'Instant' }
   ];
 
   const handleDeposit = () => {
@@ -90,9 +90,9 @@ export const DepositModal: React.FC = () => {
 
           {/* Preset Amounts */}
           <div className="mb-6">
-            <label className="text-xs font-bold text-zinc-300 block mb-2">Select Deposit Amount ($):</label>
+            <label className="text-xs font-bold text-zinc-300 block mb-2">Select Deposit Amount (₹ INR):</label>
             <div className="grid grid-cols-5 gap-2 mb-3">
-              {[25, 50, 100, 250, 500].map(val => (
+              {[500, 1000, 2000, 5000, 10000].map(val => (
                 <button
                   key={val}
                   onClick={() => {
@@ -105,17 +105,17 @@ export const DepositModal: React.FC = () => {
                       : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:bg-zinc-800'
                   }`}
                 >
-                  ${val}
+                  ₹{val.toLocaleString()}
                 </button>
               ))}
             </div>
 
             <div className="relative">
-              <span className="absolute left-3 top-2.5 text-xs text-zinc-500 font-bold">$</span>
+              <span className="absolute left-3 top-2.5 text-xs text-zinc-500 font-bold">₹</span>
               <input
                 type="number"
-                min="10"
-                max="10000"
+                min="100"
+                max="500000"
                 value={amount}
                 onChange={e => setAmount(Number(e.target.value))}
                 className="w-full pl-7 pr-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-amber-400 font-bold focus:outline-none focus:border-amber-500"
@@ -125,21 +125,21 @@ export const DepositModal: React.FC = () => {
 
           {/* Bonus calculation pill */}
           <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl mb-6 text-xs flex items-center justify-between text-emerald-300 font-semibold">
-            <span>Estimated Crypto Bonus:</span>
-            <span className="font-bold text-amber-400">+${(amount * 0.1).toFixed(2)} Bonus Cash</span>
+            <span>Estimated Instant Cash Bonus:</span>
+            <span className="font-bold text-amber-400">+₹{(amount * 0.1).toFixed(2)} Bonus Cash</span>
           </div>
 
           {/* Action Button */}
           <button
             onClick={handleDeposit}
-            disabled={isProcessing || amount < 10}
+            disabled={isProcessing || amount < 100}
             className="w-full py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-500 text-zinc-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isProcessing ? (
               <>Processing Top-Up...</>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" /> Deposit ${amount}.00 Now
+                <Sparkles className="w-4 h-4" /> Deposit ₹{amount.toLocaleString()}.00 Now
               </>
             )}
           </button>

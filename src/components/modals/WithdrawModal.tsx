@@ -18,7 +18,7 @@ export const WithdrawModal: React.FC = () => {
   const handleWithdraw = () => {
     sound.playClick();
     if (amount > totalAvailable) {
-      setErrorMsg(`Amount exceeds total withdrawable balance ($${totalAvailable.toFixed(2)})`);
+      setErrorMsg(`Amount exceeds total withdrawable balance (₹${totalAvailable.toLocaleString('en-IN', { minimumFractionDigits: 2 })})`);
       return;
     }
     if (!destination.trim()) {
@@ -72,22 +72,22 @@ export const WithdrawModal: React.FC = () => {
           <div className="p-4 bg-zinc-900/80 rounded-2xl border border-zinc-800 mb-6 flex items-center justify-between">
             <div>
               <span className="text-[10px] text-zinc-400 uppercase font-bold block mb-0.5">Withdrawable Winnings</span>
-              <span className="text-xl font-extrabold text-emerald-400 font-mono">${user.winningBalance.toFixed(2)}</span>
+              <span className="text-xl font-extrabold text-emerald-400 font-mono">₹{user.winningBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
             <div className="text-right">
               <span className="text-[10px] text-zinc-400 uppercase font-bold block mb-0.5">Main Cash Balance</span>
-              <span className="text-sm font-bold text-amber-400 font-mono">${user.balance.toFixed(2)}</span>
+              <span className="text-sm font-bold text-amber-400 font-mono">₹{user.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
           {/* Destination input */}
           <div className="mb-4">
-            <label className="text-xs font-bold text-zinc-300 block mb-1.5">Payout Address / Account:</label>
+            <label className="text-xs font-bold text-zinc-300 block mb-1.5">Payout UPI ID / PhonePe / Bank Account:</label>
             <input
               type="text"
               value={destination}
               onChange={e => setDestination(e.target.value)}
-              placeholder="e.g. USDT TRC20 Address or IBAN Bank Account"
+              placeholder="e.g. name@upi, Paytm, or IFSC + Account No."
               className="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500"
             />
           </div>
@@ -95,21 +95,21 @@ export const WithdrawModal: React.FC = () => {
           {/* Amount input */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-1.5">
-              <label className="text-xs font-bold text-zinc-300">Withdraw Amount ($):</label>
+              <label className="text-xs font-bold text-zinc-300">Withdraw Amount (₹ INR):</label>
               <button
                 type="button"
                 onClick={() => setAmount(totalAvailable)}
                 className="text-[11px] font-bold text-amber-400 hover:underline"
               >
-                Max (${totalAvailable.toFixed(2)})
+                Max (₹{totalAvailable.toLocaleString('en-IN', { minimumFractionDigits: 2 })})
               </button>
             </div>
 
             <div className="relative">
-              <span className="absolute left-3 top-2.5 text-xs text-zinc-500 font-bold">$</span>
+              <span className="absolute left-3 top-2.5 text-xs text-zinc-500 font-bold">₹</span>
               <input
                 type="number"
-                min="20"
+                min="100"
                 max={totalAvailable}
                 value={amount}
                 onChange={e => setAmount(Number(e.target.value))}
@@ -134,7 +134,7 @@ export const WithdrawModal: React.FC = () => {
               <>Processing Cashout...</>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" /> Request Cashout (${amount}.00)
+                <Sparkles className="w-4 h-4" /> Request Cashout (₹{amount.toLocaleString()})
               </>
             )}
           </button>

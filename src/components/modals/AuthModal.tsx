@@ -26,9 +26,9 @@ export const AuthModal: React.FC = () => {
 
   const handleAdminLogin = () => {
     sound.playClick();
-    setEmail('admin@fortunagold.com');
-    setPassword('admin123');
-    login('admin@fortunagold.com');
+    setEmail('admin@fortune.com');
+    setPassword('Admin@1212');
+    login('admin@fortune.com');
   };
 
   return (
@@ -115,8 +115,8 @@ export const AuthModal: React.FC = () => {
               <span className="text-[9px] text-zinc-500">Auto-filled</span>
             </div>
             <div className="flex items-center justify-between text-zinc-400">
-              <span>Email: <strong className="text-white">admin@fortunagold.com</strong></span>
-              <span>Pass: <strong className="text-white">admin123</strong></span>
+              <span>Email: <strong className="text-white">admin@fortune.com</strong></span>
+              <span>Pass: <strong className="text-white">Admin@1212</strong></span>
             </div>
           </div>
 

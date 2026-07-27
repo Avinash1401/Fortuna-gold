@@ -2,16 +2,29 @@ import { Game, VipTierInfo, FAQItem, RecentWinner } from '../types';
 
 export const INITIAL_GAMES: Game[] = [
   {
+    id: 'colour-prediction-3d',
+    title: '3D Real Colour Prediction',
+    category: 'Prediction',
+    badge: '3D FEATURED',
+    image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&q=80&w=800',
+    jackpotAmount: 1000000,
+    minTicketPrice: 10,
+    playersCount: 52400,
+    nextDrawSeconds: 30,
+    description: 'High-octane 3D real-time colour parity game. Bet on Red (2x), Green (2x), Violet (4.5x), or Numbers (9x) with live 3D ball animation!',
+    rtp: '98.9%'
+  },
+  {
     id: 'powerball-649',
     title: 'Fortuna Powerball 6/49',
     category: 'Lottery',
     badge: 'JACKPOT',
     image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&q=80&w=800',
-    jackpotAmount: 12845920,
-    minTicketPrice: 2,
+    jackpotAmount: 128459200,
+    minTicketPrice: 20,
     playersCount: 42100,
     nextDrawSeconds: 8420,
-    description: 'Pick 6 lucky numbers between 1 and 49 for a chance to win the $12.8M progressive grand jackpot!',
+    description: 'Pick 6 lucky numbers between 1 and 49 for a chance to win the ₹12.8 Cr progressive grand jackpot!',
     rtp: '98.2%'
   },
   {
@@ -20,11 +33,11 @@ export const INITIAL_GAMES: Game[] = [
     category: 'Lottery',
     badge: 'HOT',
     image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=800',
-    jackpotAmount: 3450000,
-    minTicketPrice: 1,
+    jackpotAmount: 34500000,
+    minTicketPrice: 10,
     playersCount: 28900,
     nextDrawSeconds: 1800,
-    description: 'Ultra fast 30-minute draw interval with boosted $3.4M prize pool and 1-in-8 win odds.',
+    description: 'Ultra fast 30-minute draw interval with boosted ₹3.4 Cr prize pool and 1-in-8 win odds.',
     rtp: '97.8%'
   },
   {
@@ -33,8 +46,8 @@ export const INITIAL_GAMES: Game[] = [
     category: 'Wheel',
     badge: 'HOT',
     image: 'https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&q=80&w=800',
-    jackpotAmount: 500000,
-    minTicketPrice: 5,
+    jackpotAmount: 5000000,
+    minTicketPrice: 50,
     playersCount: 19400,
     nextDrawSeconds: 0,
     description: 'Spin the 12-segment golden wheel for instant cash multipliers up to 500x or free tickets!',
@@ -46,8 +59,8 @@ export const INITIAL_GAMES: Game[] = [
     category: 'Scratch',
     badge: 'NEW',
     image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=800',
-    jackpotAmount: 100000,
-    minTicketPrice: 1,
+    jackpotAmount: 1000000,
+    minTicketPrice: 10,
     playersCount: 15200,
     nextDrawSeconds: 0,
     description: 'Drag or tap to scratch off 6 panels. Match 3 golden crown or coin symbols for instant cash payouts.',
@@ -59,8 +72,8 @@ export const INITIAL_GAMES: Game[] = [
     category: 'Instant Win',
     badge: 'HOT',
     image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
-    jackpotAmount: 250000,
-    minTicketPrice: 2,
+    jackpotAmount: 2500000,
+    minTicketPrice: 20,
     playersCount: 31000,
     nextDrawSeconds: 0,
     description: 'Uncover gold nuggets on a 5x5 grid while avoiding hidden mines. Cash out anytime!',
@@ -72,8 +85,8 @@ export const INITIAL_GAMES: Game[] = [
     category: 'Instant Win',
     badge: 'NEW',
     image: 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&q=80&w=800',
-    jackpotAmount: 50000,
-    minTicketPrice: 1,
+    jackpotAmount: 500000,
+    minTicketPrice: 10,
     playersCount: 9800,
     nextDrawSeconds: 0,
     description: 'Predict Heads or Tails on a 24k gold coin. Build streak multipliers up to 128x!',
@@ -85,8 +98,8 @@ export const INITIAL_GAMES: Game[] = [
     category: 'Lottery',
     badge: 'EXCLUSIVE',
     image: 'https://images.unsplash.com/photo-1518173946687-a4c8a383392e?auto=format&fit=crop&q=80&w=800',
-    jackpotAmount: 750000,
-    minTicketPrice: 2,
+    jackpotAmount: 7500000,
+    minTicketPrice: 20,
     playersCount: 12400,
     nextDrawSeconds: 120,
     description: 'Draws happen every 2 minutes! Pick up to 10 numbers out of 80 for rapid fire excitement.',
@@ -102,7 +115,7 @@ export const VIP_TIERS: VipTierInfo[] = [
     cashbackPercent: 2,
     rakebackPercent: 1,
     dailyBonusMultiplier: 1.0,
-    withdrawLimit: '$2,500 / day',
+    withdrawLimit: '₹2,50,000 / day',
     perks: ['Daily Wheel Check-in', 'Standard Support', '2% Weekly Cashback'],
     color: 'from-amber-700 to-amber-900'
   },
@@ -113,7 +126,7 @@ export const VIP_TIERS: VipTierInfo[] = [
     cashbackPercent: 4,
     rakebackPercent: 2,
     dailyBonusMultiplier: 1.25,
-    withdrawLimit: '$5,000 / day',
+    withdrawLimit: '₹5,00,000 / day',
     perks: ['4% Weekly Cashback', 'Priority Support', 'Exclusive Silver Tournaments', '1.25x Daily Bonus'],
     color: 'from-slate-400 to-slate-600'
   },
@@ -124,7 +137,7 @@ export const VIP_TIERS: VipTierInfo[] = [
     cashbackPercent: 7,
     rakebackPercent: 3.5,
     dailyBonusMultiplier: 1.5,
-    withdrawLimit: '$15,000 / day',
+    withdrawLimit: '₹15,00,000 / day',
     perks: ['7% Weekly Cashback', '3.5% Instant Rakeback', 'Dedicated Account Assistant', '1.5x Daily Bonus', 'Free Weekly Tickets'],
     color: 'from-amber-400 via-yellow-500 to-amber-600'
   },
@@ -135,8 +148,8 @@ export const VIP_TIERS: VipTierInfo[] = [
     cashbackPercent: 10,
     rakebackPercent: 5,
     dailyBonusMultiplier: 2.0,
-    withdrawLimit: '$50,000 / day',
-    perks: ['10% Weekly Cashback', '5% Instant Rakeback', 'VIP Personal Host', 'Birthday Cash Gift ($250)', 'Zero Withdrawal Fees'],
+    withdrawLimit: '₹50,00,000 / day',
+    perks: ['10% Weekly Cashback', '5% Instant Rakeback', 'VIP Personal Host', 'Birthday Cash Gift (₹25,000)', 'Zero Withdrawal Fees'],
     color: 'from-cyan-400 via-teal-500 to-emerald-600'
   },
   {
@@ -164,13 +177,13 @@ export const VIP_TIERS: VipTierInfo[] = [
 ];
 
 export const DAILY_BONUSES = [
-  { day: 1, label: 'Day 1', reward: '$5 Cash', bonusCash: 5 },
-  { day: 2, label: 'Day 2', reward: '$10 Cash', bonusCash: 10 },
-  { day: 3, label: 'Day 3', reward: '$15 Cash + 1 Ticket', bonusCash: 15 },
-  { day: 4, label: 'Day 4', reward: '$25 Cash', bonusCash: 25 },
-  { day: 5, label: 'Day 5', reward: '$40 Cash + 2 Tickets', bonusCash: 40 },
-  { day: 6, label: 'Day 6', reward: '$60 Cash', bonusCash: 60 },
-  { day: 7, label: 'Day 7', reward: '🌟 $150 Jackpot Chest', bonusCash: 150 }
+  { day: 1, label: 'Day 1', reward: '₹50 Cash', bonusCash: 50 },
+  { day: 2, label: 'Day 2', reward: '₹100 Cash', bonusCash: 100 },
+  { day: 3, label: 'Day 3', reward: '₹150 Cash + 1 Ticket', bonusCash: 150 },
+  { day: 4, label: 'Day 4', reward: '₹250 Cash', bonusCash: 250 },
+  { day: 5, label: 'Day 5', reward: '₹400 Cash + 2 Tickets', bonusCash: 400 },
+  { day: 6, label: 'Day 6', reward: '₹600 Cash', bonusCash: 600 },
+  { day: 7, label: 'Day 7', reward: '🌟 ₹1,500 Jackpot Chest', bonusCash: 1500 }
 ];
 
 export const RECENT_WINNERS_INITIAL: RecentWinner[] = [

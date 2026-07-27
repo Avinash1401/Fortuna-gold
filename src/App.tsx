@@ -22,6 +22,7 @@ import { FortuneWheelGame } from './components/games/FortuneWheelGame';
 import { ScratchCardGame } from './components/games/ScratchCardGame';
 import { MinesGame } from './components/games/MinesGame';
 import { CoinFlipGame } from './components/games/CoinFlipGame';
+import { ColourPredictionGame } from './components/games/ColourPredictionGame';
 
 const MainAppContent: React.FC = () => {
   const { activeTab, activeGameModal, closeGameModal } = useAuth();
@@ -29,6 +30,9 @@ const MainAppContent: React.FC = () => {
   const renderGameComponent = () => {
     if (!activeGameModal) return null;
 
+    if (activeGameModal.id === 'colour-prediction-3d' || activeGameModal.category === 'Prediction') {
+      return <ColourPredictionGame onClose={closeGameModal} />;
+    }
     if (activeGameModal.id === 'fortune-wheel' || activeGameModal.category === 'Wheel') {
       return <FortuneWheelGame onClose={closeGameModal} />;
     }

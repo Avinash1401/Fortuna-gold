@@ -47,13 +47,13 @@ export const Navbar: React.FC = () => {
               <Flame className="w-3 h-3 text-amber-400 animate-bounce" /> LIVE ANNOUNCEMENT
             </span>
             <span className="text-neutral-300 text-xs truncate max-w-xl">
-              {systemSettings?.announcement || 'Fortuna Grand Powerball Jackpot Pool is now $12,845,920.00'}
+              {systemSettings?.announcement || 'Fortuna Grand Powerball Jackpot Pool is now ₹12,84,59,200.00'}
             </span>
           </div>
 
           <div className="hidden sm:flex items-center gap-4 text-[11px] text-neutral-400">
             <span className="flex items-center gap-1 text-amber-300">
-              <Gift className="w-3.5 h-3.5 text-amber-400" /> $1,000 Welcome Pack
+              <Gift className="w-3.5 h-3.5 text-amber-400" /> ₹1,00,000 Welcome Pack
             </span>
             <span className="text-white/10">|</span>
             <span className="text-emerald-400 font-mono flex items-center gap-1.5">
@@ -129,7 +129,7 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-center gap-3 bg-neutral-900 px-3.5 py-1.5 rounded-full border border-white/10">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                   <span className="text-sm font-mono text-emerald-400 font-bold">
-                    ${(user.balance + user.winningBalance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    ₹{(user.balance + user.winningBalance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                   <button
                     onClick={() => {

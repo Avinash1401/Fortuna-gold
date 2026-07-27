@@ -220,11 +220,11 @@ export const AdminPage: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-white/5">
           <div>
             <span className="text-[10px] text-neutral-500 uppercase font-mono font-bold block">Gross Gaming Revenue (GGR)</span>
-            <span className="text-xl font-black font-mono text-emerald-400">${netGgr.toLocaleString()}</span>
+            <span className="text-xl font-black font-mono text-emerald-400">₹{netGgr.toLocaleString('en-IN')}</span>
           </div>
           <div>
             <span className="text-[10px] text-neutral-500 uppercase font-mono font-bold block">Grand Jackpot Pool</span>
-            <span className="text-xl font-black font-mono text-amber-400">${systemSettings.grandJackpotPool.toLocaleString()}</span>
+            <span className="text-xl font-black font-mono text-amber-400">₹{systemSettings.grandJackpotPool.toLocaleString('en-IN')}</span>
           </div>
           <div>
             <span className="text-[10px] text-neutral-500 uppercase font-mono font-bold block">Total Players</span>
@@ -292,7 +292,7 @@ export const AdminPage: React.FC = () => {
                 <span className="text-xs text-neutral-400 font-medium">Total Player Deposits</span>
                 <ArrowUpRight className="w-4 h-4 text-emerald-400" />
               </div>
-              <p className="text-2xl font-black font-mono text-white">$4,850,200.00</p>
+              <p className="text-2xl font-black font-mono text-white">₹4,85,02,000.00</p>
               <p className="text-[11px] text-emerald-400 font-medium mt-1">+14.2% from last week</p>
             </div>
 
@@ -301,7 +301,7 @@ export const AdminPage: React.FC = () => {
                 <span className="text-xs text-neutral-400 font-medium">Total Winnings Paid</span>
                 <ArrowDownRight className="w-4 h-4 text-amber-400" />
               </div>
-              <p className="text-2xl font-black font-mono text-amber-400">$3,429,350.00</p>
+              <p className="text-2xl font-black font-mono text-amber-400">₹3,42,93,500.00</p>
               <p className="text-[11px] text-neutral-500 font-medium mt-1">Instant payouts verified</p>
             </div>
 
@@ -496,6 +496,112 @@ export const AdminPage: React.FC = () => {
             </div>
           </div>
 
+          {/* 3D Colour Prediction & Manual/Automatic Result Control Panel */}
+          <div className="p-5 bg-gradient-to-r from-neutral-900 via-zinc-900 to-neutral-900 border border-amber-500/30 rounded-3xl shadow-2xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center font-black">
+                  <Sliders className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+                    Result Control Engine (Manual & Automatic Integration)
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+                      LIVE
+                    </span>
+                  </h3>
+                  <p className="text-xs text-zinc-400">Set automatic RNG or force specific Win/Loss outcomes for 3D Colour Prediction & Games</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Outcome Mode Selector */}
+              <div className="p-4 bg-black/60 border border-white/10 rounded-2xl">
+                <label className="text-xs font-bold text-amber-300 uppercase tracking-wider block mb-2">
+                  System Result Control Mode:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { mode: 'automatic', label: 'Automatic (RNG)', desc: 'Fair random draw' },
+                    { mode: 'manual', label: 'Manual Control', desc: 'Hold for Admin' },
+                    { mode: 'force_win', label: 'Force Player Win', desc: 'Guaranteed win' },
+                    { mode: 'force_loss', label: 'Force Player Loss', desc: 'Guaranteed loss' },
+                  ].map(item => {
+                    const active = (systemSettings.resultControlMode || 'automatic') === item.mode;
+                    return (
+                      <button
+                        key={item.mode}
+                        onClick={() => {
+                          sound.playClick();
+                          updateSystemSettings({ resultControlMode: item.mode as any });
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition-all ${
+                          active
+                            ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold shadow-lg'
+                            : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        <span className="text-xs block font-bold">{item.label}</span>
+                        <span className="text-[10px] text-zinc-500 block">{item.desc}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 3D Real Colour Prediction Number / Color Override */}
+              <div className="p-4 bg-black/60 border border-white/10 rounded-2xl">
+                <label className="text-xs font-bold text-cyan-300 uppercase tracking-wider block mb-2">
+                  3D Colour Prediction Manual Override:
+                </label>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-[11px] text-zinc-400 block mb-1">Set Forced Next Number (0-9):</span>
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => {
+                        const isSelected = systemSettings.resultNextPredictionNumber === num;
+                        const colorClass = (num === 0 || num === 5)
+                          ? 'bg-purple-600'
+                          : num % 2 === 0
+                          ? 'bg-rose-600'
+                          : 'bg-emerald-600';
+                        return (
+                          <button
+                            key={num}
+                            onClick={() => {
+                              sound.playClick();
+                              updateSystemSettings({ resultNextPredictionNumber: num });
+                            }}
+                            className={`w-8 h-8 rounded-lg font-mono font-black text-xs text-white border transition-all ${colorClass} ${
+                              isSelected ? 'ring-2 ring-amber-400 border-white scale-110 shadow-lg' : 'opacity-60 hover:opacity-100 border-transparent'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        );
+                      })}
+                      <button
+                        onClick={() => updateSystemSettings({ resultNextPredictionNumber: undefined })}
+                        className="px-2.5 py-1 bg-zinc-800 text-zinc-400 text-[10px] font-bold rounded-lg border border-zinc-700 hover:text-white"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-zinc-400 bg-zinc-900/90 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
+                    <span>Active Control State:</span>
+                    <span className="font-mono font-bold text-amber-400">
+                      {systemSettings.resultControlMode?.toUpperCase() || 'AUTOMATIC'}
+                      {systemSettings.resultNextPredictionNumber !== undefined && ` (Forced Ball: ${systemSettings.resultNextPredictionNumber})`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Quick Resolution Controls / Overview Card */}
           <div className="p-4 bg-neutral-900/90 border border-amber-500/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -564,11 +670,11 @@ export const AdminPage: React.FC = () => {
                       <div className="flex items-center gap-5 sm:gap-8 font-mono text-left md:text-center shrink-0">
                         <div>
                           <span className="text-[10px] text-neutral-500 uppercase block">Wager Amount</span>
-                          <span className="text-sm font-black text-white">${bet.wagerAmount.toLocaleString()}</span>
+                          <span className="text-sm font-black text-white">₹{bet.wagerAmount.toLocaleString('en-IN')}</span>
                         </div>
                         <div>
                           <span className="text-[10px] text-neutral-500 uppercase block">Potential Payout</span>
-                          <span className="text-sm font-black text-emerald-400">${bet.potentialPayout.toLocaleString()}</span>
+                          <span className="text-sm font-black text-emerald-400">₹{bet.potentialPayout.toLocaleString('en-IN')}</span>
                         </div>
                         <div>
                           <span className="text-[10px] text-neutral-500 uppercase block">Status</span>
@@ -800,9 +906,9 @@ export const AdminPage: React.FC = () => {
                         </select>
                       </td>
 
-                      <td className="p-4 font-mono font-bold text-emerald-400">${u.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                      <td className="p-4 font-mono font-bold text-amber-400">${u.winningBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                      <td className="p-4 font-mono text-neutral-300">${u.totalWagered.toLocaleString()}</td>
+                      <td className="p-4 font-mono font-bold text-emerald-400">₹{u.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                      <td className="p-4 font-mono font-bold text-amber-400">₹{u.winningBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                      <td className="p-4 font-mono text-neutral-300">₹{u.totalWagered.toLocaleString('en-IN')}</td>
 
                       <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-2">
@@ -860,7 +966,7 @@ export const AdminPage: React.FC = () => {
                     <tr key={tx.id} className="hover:bg-neutral-800/50 transition-colors font-mono">
                       <td className="p-4 text-neutral-500 text-[11px]">{tx.id}</td>
                       <td className="p-4 uppercase font-bold text-amber-400">{tx.type}</td>
-                      <td className="p-4 font-bold text-emerald-400 text-sm">${tx.amount.toLocaleString()}</td>
+                      <td className="p-4 font-bold text-emerald-400 text-sm">₹{tx.amount.toLocaleString('en-IN')}</td>
                       <td className="p-4 text-neutral-300">{tx.paymentMethod || 'N/A'}</td>
                       <td className="p-4 text-neutral-400 font-sans">{tx.description}</td>
                       <td className="p-4">
@@ -1236,7 +1342,7 @@ export const AdminPage: React.FC = () => {
               <p className="text-xs text-neutral-400 mt-0.5">{creditingUser.username} ({creditingUser.email})</p>
 
               <div className="my-4">
-                <label className="text-xs text-neutral-400 block mb-1 font-bold">Credit Amount ($)</label>
+                <label className="text-xs text-neutral-400 block mb-1 font-bold">Credit Amount (₹ INR)</label>
                 <input
                   type="number"
                   value={customCreditAmount}
@@ -1256,13 +1362,13 @@ export const AdminPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    const amt = Number(customCreditAmount) || 100;
+                    const amt = Number(customCreditAmount) || 500;
                     creditUserBalance(creditingUser.id, amt);
                     setCreditingUser(null);
                   }}
                   className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-xl text-xs uppercase"
                 >
-                  Grant ${customCreditAmount}
+                  Grant ₹{customCreditAmount}
                 </button>
               </div>
             </motion.div>

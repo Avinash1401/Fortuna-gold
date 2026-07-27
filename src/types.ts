@@ -30,13 +30,16 @@ export interface SystemSettings {
   globalRtp: number;
   grandJackpotPool: number;
   provablyFairSeed: string;
+  resultControlMode?: 'automatic' | 'manual' | 'force_win' | 'force_loss';
+  resultNextPredictionColor?: 'red' | 'green' | 'violet';
+  resultNextPredictionNumber?: number;
 }
 
 export interface Game {
   id: string;
   title: string;
-  category: 'Lottery' | 'Instant Win' | 'Wheel' | 'Scratch' | 'Casino';
-  badge?: 'HOT' | 'JACKPOT' | 'NEW' | 'EXCLUSIVE';
+  category: 'Lottery' | 'Instant Win' | 'Wheel' | 'Scratch' | 'Casino' | 'Prediction';
+  badge?: 'HOT' | 'JACKPOT' | 'NEW' | 'EXCLUSIVE' | '3D FEATURED';
   image: string;
   jackpotAmount: number;
   minTicketPrice: number;
